@@ -4,6 +4,7 @@ import numpy as np
 from network import RandWire
 from dataset import iter_utils
 import os
+import time
 
 # argument parser for options
 def args():
@@ -120,7 +121,7 @@ def main(args):
         init_epoch = int(init_epoch)
 
         for epoch_ in range(init_epoch + 1, args.epochs + 1):
-
+            start= time.time()
             # train
             while gstep * args.batch_size < epoch_ * args.train_set_size:
                 try:
@@ -156,8 +157,10 @@ def main(args):
                         break
 
             saver.save(sess, args.checkpoint_dir + '/' + args.checkpoint_name, global_step=global_step)
-
+            stop= time.time()
+            duration= stop-start
             predictions = np.concatenate(predictions)
+            print ('Epoch Time: ', duration)
             print('best: ', best_accuracy.eval(), '\ncurrent: ', np.mean(predictions))
             if best_accuracy.eval() < np.mean(predictions):
                 print('save checkpoint')
