@@ -70,7 +70,7 @@ def conv_block(input, kernels, filters, strides, dropout_rate, training, scope):
   else:
     with tf.variable_scope(scope):
       input = tf.nn.relu(input)
-      input = tf.layers.separable_conv2d(input, filters=filters, kernel_size=[kernels, kernels], strides=[strides, strides], padding='SAME')
+      input = tf.layers.separable_conv2d(input, filters=4*filters, kernel_size=[kernels, kernels], strides=[strides, strides], padding='SAME')
       input = tf.layers.batch_normalization(input, training=training)
       input = tf.layers.dropout(input, rate=dropout_rate, training=training)
     return input
