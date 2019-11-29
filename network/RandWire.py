@@ -21,6 +21,70 @@ def conv_block2(input, kernels, filters, strides, dropout_rate, training, scope)
     input = tf.layers.dropout(input, rate=dropout_rate, training=training)
   return input 
 
+# def conv_block(input, kernels, filters, strides, dropout_rate, training, scope, input2= None):
+#   if (strides==1):
+#     with tf.variable_scope(scope):
+#       input = tf.nn.relu(input)
+#       input1 = tf.layers.conv2d(input, filters=filters, kernel_size=[1, 1], strides=[strides, strides], padding='SAME')
+#       input1= tf.layers.batch_normalization(input1, training= training)
+#       if (input2!= None):
+#         input= input2
+#       input2 = tf.layers.conv2d(input, filters=filters, kernel_size=[1, 1], strides=[strides, strides], padding='SAME')
+#       input2= tf.layers.batch_normalization(input2, training= training)
+
+#       interm2_1= tf.nn.relu(input1)
+#       interm2_1= tf.layers.separable_conv2d(interm2_1, filters=filters, kernel_size=[kernels, kernels], strides=[strides, strides], padding='SAME')
+#       interm2_1= tf.layers.batch_normalization(interm2_1, training= training)
+#       interm2_1= tf.nn.relu(interm2_1)
+#       interm2_1= tf.layers.separable_conv2d(interm2_1, filters=filters, kernel_size=[kernels, kernels], strides=[strides, strides], padding='SAME')
+#       interm2_1= tf.layers.batch_normalization(interm2_1, training= training)
+#       interm2_2= tf.identity(input2)
+#       interm2 =  tf.add(interm2_1, interm2_2)
+
+#       interm1_1= tf.nn.relu(input1)
+#       interm1_1= tf.layers.separable_conv2d(interm1_1, filters=filters, kernel_size=[kernels, kernels], strides=[strides, strides], padding='SAME')
+#       interm1_1= tf.layers.batch_normalization(interm1_1, training= training)
+#       interm1_1= tf.nn.relu(interm1_1)
+#       interm1_1= tf.layers.separable_conv2d(interm1_1, filters=filters, kernel_size=[kernels, kernels], strides=[strides, strides], padding='SAME')
+#       interm1_1= tf.layers.batch_normalization(interm1_1, training= training)
+
+#       interm1_2= tf.nn.relu(input2)
+#       interm1_2= tf.layers.separable_conv2d(interm1_2, filters=filters, kernel_size=[kernels, kernels], strides=[strides, strides], padding='SAME')
+#       interm1_2= tf.layers.batch_normalization(interm1_2, training= training)
+#       interm1_2= tf.nn.relu(interm1_2)
+#       interm1_2= tf.layers.separable_conv2d(interm1_2, filters=filters, kernel_size=[kernels, kernels], strides=[strides, strides], padding='SAME')
+#       interm1_2= tf.layers.batch_normalization(interm1_2, training= training)
+
+#       interm1 =  tf.add(interm1_1, interm1_2)
+
+#       interm0_1= tf.nn.relu(input1)
+#       interm0_1= tf.layers.separable_conv2d(interm0_1, filters=filters, kernel_size=[kernels, kernels], strides=[strides, strides], padding='SAME')
+#       interm0_1= tf.layers.batch_normalization(interm0_1, training= training)
+#       interm0_1= tf.nn.relu(interm0_1)
+#       interm0_1= tf.layers.separable_conv2d(interm0_1, filters=filters, kernel_size=[kernels, kernels], strides=[strides, strides], padding='SAME')
+#       interm0_1= tf.layers.batch_normalization(interm0_1, training= training)
+#       interm0_2= tf.nn.relu(input2)
+#       interm0_2= tf.layers.separable_conv2d(interm0_2, filters=filters, kernel_size=[kernels, kernels], strides=[strides, strides], padding='SAME')
+#       interm0_2= tf.layers.batch_normalization(interm0_2, training= training)
+#       interm0_2= tf.nn.relu(interm0_2)
+#       interm0_2= tf.layers.separable_conv2d(interm0_2, filters=filters, kernel_size=[kernels, kernels], strides=[strides, strides], padding='SAME')
+#       interm0_2= tf.layers.batch_normalization(interm0_2, training= training)
+
+#       interm0 =  tf.add(interm0_1, interm0_2)
+#       interm3_1= tf.nn.relu(interm0)
+#       interm3_1= tf.layers.separable_conv2d(interm3_1, filters=filters, kernel_size=[kernels, kernels], strides=[strides, strides], padding='SAME', dilation_rate=2)
+#       interm3_1= tf.layers.batch_normalization(interm3_1, training= training)
+#       interm3_2= tf.identity(input2)
+#       interm3 = tf.add(interm3_1, interm3_2)
+#     return tf.concat([interm0, interm1, interm2, interm3],3)
+#   else:
+#     with tf.variable_scope(scope):
+#       input = tf.nn.relu(input)
+#       input = tf.layers.separable_conv2d(input, filters=4*filters, kernel_size=[kernels, kernels], strides=[strides, strides], padding='SAME')
+#       input = tf.layers.batch_normalization(input, training=training)
+#       input = tf.layers.dropout(input, rate=dropout_rate, training=training)
+#     return input
+  
 def conv_block(input, kernels, filters, strides, dropout_rate, training, scope, input2= None):
   if (strides==1):
     with tf.variable_scope(scope):
@@ -38,7 +102,10 @@ def conv_block(input, kernels, filters, strides, dropout_rate, training, scope, 
       interm2_1= tf.nn.relu(interm2_1)
       interm2_1= tf.layers.separable_conv2d(interm2_1, filters=filters, kernel_size=[kernels, kernels], strides=[strides, strides], padding='SAME')
       interm2_1= tf.layers.batch_normalization(interm2_1, training= training)
+      interm2_1 = tf.layers.dropout(interm2_1, rate=dropout_rate, training=training)
+      
       interm2_2= tf.identity(input2)
+      interm2_2 = tf.layers.dropout(interm2_2, rate=dropout_rate, training=training)
       interm2 =  tf.add(interm2_1, interm2_2)
 
       interm1_1= tf.nn.relu(input1)
@@ -47,14 +114,16 @@ def conv_block(input, kernels, filters, strides, dropout_rate, training, scope, 
       interm1_1= tf.nn.relu(interm1_1)
       interm1_1= tf.layers.separable_conv2d(interm1_1, filters=filters, kernel_size=[kernels, kernels], strides=[strides, strides], padding='SAME')
       interm1_1= tf.layers.batch_normalization(interm1_1, training= training)
-
+      interm1_1 = tf.layers.dropout(interm1_1, rate=dropout_rate, training=training)
+      
       interm1_2= tf.nn.relu(input2)
       interm1_2= tf.layers.separable_conv2d(interm1_2, filters=filters, kernel_size=[kernels, kernels], strides=[strides, strides], padding='SAME')
       interm1_2= tf.layers.batch_normalization(interm1_2, training= training)
       interm1_2= tf.nn.relu(interm1_2)
       interm1_2= tf.layers.separable_conv2d(interm1_2, filters=filters, kernel_size=[kernels, kernels], strides=[strides, strides], padding='SAME')
       interm1_2= tf.layers.batch_normalization(interm1_2, training= training)
-
+      interm1_2 = tf.layers.dropout(interm1_2, rate=dropout_rate, training=training)
+      
       interm1 =  tf.add(interm1_1, interm1_2)
 
       interm0_1= tf.nn.relu(input1)
@@ -63,18 +132,26 @@ def conv_block(input, kernels, filters, strides, dropout_rate, training, scope, 
       interm0_1= tf.nn.relu(interm0_1)
       interm0_1= tf.layers.separable_conv2d(interm0_1, filters=filters, kernel_size=[kernels, kernels], strides=[strides, strides], padding='SAME')
       interm0_1= tf.layers.batch_normalization(interm0_1, training= training)
+      interm0_1 = tf.layers.dropout(interm0_1, rate=dropout_rate, training=training)
+      
       interm0_2= tf.nn.relu(input2)
       interm0_2= tf.layers.separable_conv2d(interm0_2, filters=filters, kernel_size=[kernels, kernels], strides=[strides, strides], padding='SAME')
       interm0_2= tf.layers.batch_normalization(interm0_2, training= training)
       interm0_2= tf.nn.relu(interm0_2)
       interm0_2= tf.layers.separable_conv2d(interm0_2, filters=filters, kernel_size=[kernels, kernels], strides=[strides, strides], padding='SAME')
       interm0_2= tf.layers.batch_normalization(interm0_2, training= training)
-
+      interm0_2 = tf.layers.dropout(interm0_2, rate=dropout_rate, training=training)
+      
       interm0 =  tf.add(interm0_1, interm0_2)
+      
       interm3_1= tf.nn.relu(interm0)
       interm3_1= tf.layers.separable_conv2d(interm3_1, filters=filters, kernel_size=[kernels, kernels], strides=[strides, strides], padding='SAME', dilation_rate=2)
       interm3_1= tf.layers.batch_normalization(interm3_1, training= training)
+      interm3_1 = tf.layers.dropout(interm3_1, rate=dropout_rate, training=training)
+      
       interm3_2= tf.identity(input2)
+      interm3_2 = tf.layers.dropout(interm3_2, rate=dropout_rate, training=training)
+      
       interm3 = tf.add(interm3_1, interm3_2)
     return tf.concat([interm0, interm1, interm2, interm3],3)
   else:
