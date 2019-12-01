@@ -6,6 +6,8 @@ from dataset import iter_utils
 import os
 import time
 
+tf.logging.set_verbosity(tf.logging.ERROR)
+
 # argument parser for options
 def args():
     parser = argparse.ArgumentParser()
@@ -31,6 +33,15 @@ def args():
     args = parser.parse_args()
 
     return args
+
+def show_params():
+  total = 0
+  for v in tf.trainable_variables():
+    dims = v.get_shape().as_list()
+    num  = int(np.prod(dims))
+    total += num
+    print('  %s \t\t Num: %d \t\t Shape %s ' % (v.name, num, dims))
+  print('\nTotal number of params: %d' % total)
 
 # main function for training
 def main(args):
@@ -97,7 +108,7 @@ def main(args):
     with tf.Session() as sess:
         merged = tf.summary.merge_all()
         writer = tf.summary.FileWriter(args.checkpoint_dir + '/log', sess.graph)
-
+        show_params()
         sess.run(tf.global_variables_initializer())
         augmentations = [lambda image, label: iter_utils.pad_and_crop(image, label, args.image_shape, 4), iter_utils.flip]
         train_iterator = iter_utils.batch_iterator(args.train_record_dir, args.epochs, args.batch_size, augmentations, True)
