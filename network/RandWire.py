@@ -25,23 +25,23 @@ def reduction_cell(input, kernels, filters, strides, dropout_rate, training, sco
     input2 = tf.layers.conv2d(input, filters=filters, kernel_size=[1, 1], strides=[1, 1], padding='SAME')
     input2= tf.layers.batch_normalization(input2, training= training)
 
-    interm0_1= tf.layers.max_pooling2d(input2, kernel_size=[kernels, kernels], strides=[strides, strides], padding='SAME')
-    interm0_2= tf.layers.max_pooling2d(input1, kernel_size=[kernels, kernels], strides=[strides, strides], padding='SAME')
+    interm0_1= tf.layers.max_pooling2d(input2, pool_size=[kernels, kernels], strides=[strides, strides], padding='SAME')
+    interm0_2= tf.layers.max_pooling2d(input1, pool_size=[kernels, kernels], strides=[strides, strides], padding='SAME')
     
     interm0 =  tf.add(interm0_1, interm0_2)
 
-    interm2_1= tf.layers.max_pooling2d(input2, kernel_size=[kernels, kernels], strides=[strides, strides], padding='SAME')
+    interm2_1= tf.layers.max_pooling2d(input2, pool_size=[kernels, kernels], strides=[strides, strides], padding='SAME')
     interm2_2= tf.identity(interm0)
 
     interm2 =  tf.add(interm2_1, interm2_2)
 
     interm1_1= tf.identity(interm0)
-    interm1_2= tf.layers.max_pooling2d(input1, kernel_size=[kernels, kernels], strides=[strides, strides], padding='SAME')
+    interm1_2= tf.layers.max_pooling2d(input1, pool_size=[kernels, kernels], strides=[strides, strides], padding='SAME')
     
     interm1 =  tf.add(interm1_1, interm1_2)
     
     interm3_1= tf.identity(interm0)
-    interm3_2= tf.layers.max_pooling2d(input1, kernel_size=[kernels, kernels], strides=[strides, strides], padding='SAME')
+    interm3_2= tf.layers.max_pooling2d(input1, pool_size=[kernels, kernels], strides=[strides, strides], padding='SAME')
     
     interm3 = tf.add(interm3_1, interm3_2)
   
