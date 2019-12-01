@@ -5,13 +5,6 @@ import numpy as np
 
 # gg.watts_strogats(32, 4, 0.75)
 
-# def conv_block(input, kernels, filters, strides, dropout_rate, training, scope):
-#     with tf.variable_scope(scope):
-#         input = tf.nn.relu(input)
-#         input = tf.layers.separable_conv2d(input, filters=filters, kernel_size=[kernels, kernels], strides=[strides, strides], padding='SAME')
-#         input = tf.layers.batch_normalization(input, training=training)
-#         input = tf.layers.dropout(input, rate=dropout_rate, training=training)
-#     return input
 
 def conv_block2(input, kernels, filters, strides, dropout_rate, training, scope):
   with tf.variable_scope(scope):
@@ -21,70 +14,39 @@ def conv_block2(input, kernels, filters, strides, dropout_rate, training, scope)
     input = tf.layers.dropout(input, rate=dropout_rate, training=training)
   return input 
 
-# def conv_block(input, kernels, filters, strides, dropout_rate, training, scope, input2= None):
-#   if (strides==1):
-#     with tf.variable_scope(scope):
-#       input = tf.nn.relu(input)
-#       input1 = tf.layers.conv2d(input, filters=filters, kernel_size=[1, 1], strides=[strides, strides], padding='SAME')
-#       input1= tf.layers.batch_normalization(input1, training= training)
-#       if (input2!= None):
-#         input= input2
-#       input2 = tf.layers.conv2d(input, filters=filters, kernel_size=[1, 1], strides=[strides, strides], padding='SAME')
-#       input2= tf.layers.batch_normalization(input2, training= training)
+def reduction_cell(input, kernels, filters, strides, dropout_rate, training, scope, input2= None):
+  with tf.variable_scope(scope):
+    input = tf.nn.relu(input)
+    input1 = tf.layers.conv2d(input, filters=filters, kernel_size=[1, 1], strides=[1, 1], padding='SAME')
+    input1= tf.layers.batch_normalization(input1, training= training)
+    if (input2!= None):
+      input= input2
+    input= tf.nn.relu(input)
+    input2 = tf.layers.conv2d(input, filters=filters, kernel_size=[1, 1], strides=[1, 1], padding='SAME')
+    input2= tf.layers.batch_normalization(input2, training= training)
 
-#       interm2_1= tf.nn.relu(input1)
-#       interm2_1= tf.layers.separable_conv2d(interm2_1, filters=filters, kernel_size=[kernels, kernels], strides=[strides, strides], padding='SAME')
-#       interm2_1= tf.layers.batch_normalization(interm2_1, training= training)
-#       interm2_1= tf.nn.relu(interm2_1)
-#       interm2_1= tf.layers.separable_conv2d(interm2_1, filters=filters, kernel_size=[kernels, kernels], strides=[strides, strides], padding='SAME')
-#       interm2_1= tf.layers.batch_normalization(interm2_1, training= training)
-#       interm2_2= tf.identity(input2)
-#       interm2 =  tf.add(interm2_1, interm2_2)
+    interm0_1= tf.layers.max_pooling2d(input2, kernel_size=[kernels, kernels], strides=[strides, strides], padding='SAME')
+    interm0_2= tf.layers.max_pooling2d(input1, kernel_size=[kernels, kernels], strides=[strides, strides], padding='SAME')
+    
+    interm0 =  tf.add(interm0_1, interm0_2)
 
-#       interm1_1= tf.nn.relu(input1)
-#       interm1_1= tf.layers.separable_conv2d(interm1_1, filters=filters, kernel_size=[kernels, kernels], strides=[strides, strides], padding='SAME')
-#       interm1_1= tf.layers.batch_normalization(interm1_1, training= training)
-#       interm1_1= tf.nn.relu(interm1_1)
-#       interm1_1= tf.layers.separable_conv2d(interm1_1, filters=filters, kernel_size=[kernels, kernels], strides=[strides, strides], padding='SAME')
-#       interm1_1= tf.layers.batch_normalization(interm1_1, training= training)
+    interm2_1= tf.layers.max_pooling2d(input2, kernel_size=[kernels, kernels], strides=[strides, strides], padding='SAME')
+    interm2_2= tf.identity(interm0)
 
-#       interm1_2= tf.nn.relu(input2)
-#       interm1_2= tf.layers.separable_conv2d(interm1_2, filters=filters, kernel_size=[kernels, kernels], strides=[strides, strides], padding='SAME')
-#       interm1_2= tf.layers.batch_normalization(interm1_2, training= training)
-#       interm1_2= tf.nn.relu(interm1_2)
-#       interm1_2= tf.layers.separable_conv2d(interm1_2, filters=filters, kernel_size=[kernels, kernels], strides=[strides, strides], padding='SAME')
-#       interm1_2= tf.layers.batch_normalization(interm1_2, training= training)
+    interm2 =  tf.add(interm2_1, interm2_2)
 
-#       interm1 =  tf.add(interm1_1, interm1_2)
-
-#       interm0_1= tf.nn.relu(input1)
-#       interm0_1= tf.layers.separable_conv2d(interm0_1, filters=filters, kernel_size=[kernels, kernels], strides=[strides, strides], padding='SAME')
-#       interm0_1= tf.layers.batch_normalization(interm0_1, training= training)
-#       interm0_1= tf.nn.relu(interm0_1)
-#       interm0_1= tf.layers.separable_conv2d(interm0_1, filters=filters, kernel_size=[kernels, kernels], strides=[strides, strides], padding='SAME')
-#       interm0_1= tf.layers.batch_normalization(interm0_1, training= training)
-#       interm0_2= tf.nn.relu(input2)
-#       interm0_2= tf.layers.separable_conv2d(interm0_2, filters=filters, kernel_size=[kernels, kernels], strides=[strides, strides], padding='SAME')
-#       interm0_2= tf.layers.batch_normalization(interm0_2, training= training)
-#       interm0_2= tf.nn.relu(interm0_2)
-#       interm0_2= tf.layers.separable_conv2d(interm0_2, filters=filters, kernel_size=[kernels, kernels], strides=[strides, strides], padding='SAME')
-#       interm0_2= tf.layers.batch_normalization(interm0_2, training= training)
-
-#       interm0 =  tf.add(interm0_1, interm0_2)
-#       interm3_1= tf.nn.relu(interm0)
-#       interm3_1= tf.layers.separable_conv2d(interm3_1, filters=filters, kernel_size=[kernels, kernels], strides=[strides, strides], padding='SAME', dilation_rate=2)
-#       interm3_1= tf.layers.batch_normalization(interm3_1, training= training)
-#       interm3_2= tf.identity(input2)
-#       interm3 = tf.add(interm3_1, interm3_2)
-#     return tf.concat([interm0, interm1, interm2, interm3],3)
-#   else:
-#     with tf.variable_scope(scope):
-#       input = tf.nn.relu(input)
-#       input = tf.layers.separable_conv2d(input, filters=4*filters, kernel_size=[kernels, kernels], strides=[strides, strides], padding='SAME')
-#       input = tf.layers.batch_normalization(input, training=training)
-#       input = tf.layers.dropout(input, rate=dropout_rate, training=training)
-#     return input
+    interm1_1= tf.identity(interm0)
+    interm1_2= tf.layers.max_pooling2d(input1, kernel_size=[kernels, kernels], strides=[strides, strides], padding='SAME')
+    
+    interm1 =  tf.add(interm1_1, interm1_2)
+    
+    interm3_1= tf.identity(interm0)
+    interm3_2= tf.layers.max_pooling2d(input1, kernel_size=[kernels, kernels], strides=[strides, strides], padding='SAME')
+    
+    interm3 = tf.add(interm3_1, interm3_2)
   
+  return tf.concat([interm0, interm1, interm2, interm3],3)
+
 def conv_block(input, kernels, filters, strides, dropout_rate, training, scope, input2= None):
   if (strides==1):
     with tf.variable_scope(scope):
@@ -93,6 +55,7 @@ def conv_block(input, kernels, filters, strides, dropout_rate, training, scope, 
       input1= tf.layers.batch_normalization(input1, training= training)
       if (input2!= None):
         input= input2
+      input= tf.nn.relu(input)
       input2 = tf.layers.conv2d(input, filters=filters, kernel_size=[1, 1], strides=[strides, strides], padding='SAME')
       input2= tf.layers.batch_normalization(input2, training= training)
 
@@ -170,7 +133,7 @@ def build_stage(input, filters, dropout_rate, training, graph_data, scope):
     with tf.variable_scope(scope):
         for node in graph_order:
             if node in start_node:
-                interm = conv_block(input, 3, filters, 2, dropout_rate, training, scope='node' + str(node))
+                interm = reduction_cell(input, 3, filters, 2, dropout_rate, training, scope='node' + str(node))
                 initInput= interm
                 interms[node] = interm
             else:
@@ -262,18 +225,7 @@ def my_regime(input, stages, filters, classes, dropout_rate, graph_model, graph_
     return input
 
 def my_small_regime(input, stages, filters, classes, dropout_rate, graph_model, graph_param, graph_file_path, init_subsample, training): #regular regime 기반
-    with tf.variable_scope('conv1'):
-        if init_subsample is True:
-            input = tf.layers.separable_conv2d(input, filters=int(filters/2), kernel_size=[3, 3], strides=[2, 2], padding='SAME')
-            input = tf.layers.batch_normalization(input, training=training)
-        else:
-            input = tf.layers.separable_conv2d(input, filters=int(filters / 2), kernel_size=[3, 3], strides=[1, 1],
-                                               padding='SAME')
-            input = tf.layers.batch_normalization(input, training=training)
-
-    input = conv_block2(input, 3, filters, 1, dropout_rate, training, 'conv2')
-
-    for stage in range(3, stages+1):
+    for stage in range(1, stages+1):
         graph_data = gg.graph_generator(graph_model, graph_param, graph_file_path, 'conv' + str(stage) + '_' + graph_model)
         input = build_stage(input, filters, dropout_rate, training, graph_data, 'conv' + str(stage))
         filters *= 2
